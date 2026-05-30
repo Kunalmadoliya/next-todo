@@ -1,4 +1,4 @@
-import {PrismaClient} from "../src/generated/prisma/client";
+import {PrismaClient} from "@/generated/prisma/client";
 import {PrismaNeon} from "@prisma/adapter-neon";
 
 const globalForPrisma = globalThis as unknown as {
@@ -9,7 +9,7 @@ function createPrismaClient() {
   const url = process.env.DATABASE_URL;
 
   if (!url) {
-    throw new Error("Database_url not set");
+    throw new Error("DATABASE_URL is not set");
   }
   const adapter = new PrismaNeon({connectionString: url});
 

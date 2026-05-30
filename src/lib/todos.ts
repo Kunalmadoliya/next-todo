@@ -37,7 +37,7 @@ async function parseJson<T>(res: Response): Promise<T> {
 }
 
 export async function fetchTodos(): Promise<Todo[]> {
-  const res = await fetch("/api/todos");
+  const res = await fetch("/api/todos", {cache: "no-store"});
   const body = await parseJson<ApiListResponse>(res);
   return body.data ?? [];
 }

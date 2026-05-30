@@ -7,7 +7,7 @@ import {
   fetchTodos,
   updateTodo,
   type Todo,
-} from "../lib/todos";
+} from "@/lib/todos";
 
 function formatDate(iso: string) {
   return new Intl.DateTimeFormat("en-US", {
