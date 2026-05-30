@@ -1,13 +1,13 @@
 "use client";
 
-import React, {useCallback, useEffect, useMemo, useState, useRef} from "react";
+import React, { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import {
   createTodo,
   deleteTodo,
   fetchTodos,
   updateTodo,
   type Todo,
-} from "@/lib/todos";
+} from "../lib/todos";
 
 function formatDate(iso: string) {
   return new Intl.DateTimeFormat("en-US", {
@@ -45,18 +45,17 @@ export function TodoBoard() {
 
   const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const triggerToast = useCallback(
-    (message: string, type: "success" | "error" = "success") => {
-      if (toastTimeoutRef.current) {
-        clearTimeout(toastTimeoutRef.current);
-      }
-      setToast({message, type});
-      toastTimeoutRef.current = setTimeout(() => setToast(null), 3000);
-    },
-    [],
-  );
+  const triggerToast = useCallback((
+    message: string,
+    type: "success" | "error" = "success",
+  ) => {
+    if (toastTimeoutRef.current) {
+      clearTimeout(toastTimeoutRef.current);
+    }
+    setToast({ message, type });
+    toastTimeoutRef.current = setTimeout(() => setToast(null), 3000);
+  }, []);
 
-  // Clean up timeouts on unmount
   useEffect(() => {
     return () => {
       if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
@@ -155,16 +154,16 @@ export function TodoBoard() {
     setError(null);
     const next = !todo.completed;
     setTodos((prev) =>
-      prev.map((t) => (t.id === todo.id ? {...t, completed: next} : t)),
+      prev.map((t) => (t.id === todo.id ? { ...t, completed: next } : t)),
     );
     try {
-      const updated = await updateTodo(todo.id, {completed: next});
+      const updated = await updateTodo(todo.id, { completed: next });
       setTodos((prev) => prev.map((t) => (t.id === todo.id ? updated : t)));
       triggerToast(next ? "Task marked completed" : "Task reactivated");
     } catch (e) {
       setTodos((prev) =>
         prev.map((t) =>
-          t.id === todo.id ? {...t, completed: todo.completed} : t,
+          t.id === todo.id ? { ...t, completed: todo.completed } : t,
         ),
       );
       const msg =
@@ -210,6 +209,7 @@ export function TodoBoard() {
       <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* ================= LEFT SIDE: MANAGEMENT & FILTERS (5 Columns) ================= */}
         <div className="lg:col-span-5 flex flex-col gap-6 lg:sticky lg:top-12">
+          
           {/* Filter Tab List Container */}
           <section className="bg-zinc-900/40 border border-zinc-800/60 rounded-2xl p-4 backdrop-blur-md shadow-sm">
             <div
@@ -321,7 +321,7 @@ export function TodoBoard() {
                 Workstream Feed
               </h2>
               <span className="text-xs font-medium text-zinc-400 bg-zinc-900 border border-zinc-800 px-3 py-1 rounded-full">
-                {visible.length} items rendered
+                {visible.length + 1} items rendered
               </span>
             </div>
 
@@ -335,24 +335,86 @@ export function TodoBoard() {
             )}
 
             <div className="flex-1 space-y-4 overflow-y-auto max-h-[750px] pr-1">
-              {loading ? (
-                <div className="h-full flex flex-col items-center justify-center py-40 gap-3">
-                  <span className="w-6 h-6 border-2 border-zinc-800 border-t-blue-500 rounded-full animate-spin" />
-                  <p className="text-xs text-zinc-500 font-medium">
-                    Syncing live stream...
+              <ul className="space-y-4">
+                {/* ================= UNALTERABLE SYSTEM CARD: SOCIAL NETWORK ARCHWAY ================= */}
+                <li className="p-5 rounded-2xl border border-blue-500/30 bg-gradient-to-br from-zinc-900 via-zinc-900 to-blue-950/20 shadow-md relative overflow-hidden group transition-all duration-300 hover:border-blue-500/50">
+                  <div className="absolute top-0 right-0 transform translate-x-4 -translate-y-4 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl pointer-events-none" />
+                  
+                  <div className="flex items-start gap-4">
+                    {/* Visual Portal Dot Anchor */}
+                    <div className="mt-1 relative flex items-center justify-center">
+                      <div className="w-5 h-5 rounded-full border-2 border-blue-500/50 bg-zinc-950 flex items-center justify-center">
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+                      </div>
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-baseline justify-between gap-4 flex-wrap sm:flex-nowrap">
+                        <div>
+                          <h3 className="text-sm font-bold tracking-tight text-zinc-100 flex items-center gap-1.5">
+                            Kunal Madoliya
+                            <span className="text-[10px] bg-blue-500/10 border border-blue-500/20 text-blue-400 font-semibold px-1.5 py-0.5 rounded-md uppercase tracking-wider">
+                              Verified Dev
+                            </span>
+                          </h3>
+                          
+                        </div>
+                      
+                      </div>
+                      
+                      <p className="text-xs mt-3 leading-relaxed text-zinc-400">
+                        Connect across professional networks. Access live production deployments, architectural write-ups, and structural source repositories.
+                      </p>
+
+                      {/* Social Grid Connect Layout */}
+                      <div className="grid grid-cols-2 gap-2 mt-4">
+                        <a
+                          href="https://x.com/kunalmadoliya"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-950/80 border border-zinc-800 hover:border-zinc-700/80 text-zinc-300 hover:text-white text-xs font-semibold tracking-wide transition-all duration-200 hover:bg-zinc-900/80 group/link"
+                        >
+                          <span className="flex items-center gap-2">
+                            <span className="text-zinc-500 group-hover/link:text-blue-400 transition-colors font-mono">𝕏</span>
+                            Twitter / X
+                          </span>
+                          <span className="text-[10px] text-zinc-600 group-hover/link:text-zinc-400 transition-colors">↗</span>
+                        </a>
+                        <a
+                          href="https://linkedin.com"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-950/80 border border-zinc-800 hover:border-zinc-700/80 text-zinc-300 hover:text-white text-xs font-semibold tracking-wide transition-all duration-200 hover:bg-zinc-900/80 group/link"
+                        >
+                          <span className="flex items-center gap-2">
+                            <span className="text-zinc-500 group-hover/link:text-blue-400 transition-colors font-mono">in</span>
+                            LinkedIn
+                          </span>
+                          <span className="text-[10px] text-zinc-600 group-hover/link:text-zinc-400 transition-colors">↗</span>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+
+                {/* ================= DYNAMIC TASK LIST MATRIX ================= */}
+                {loading ? (
+                  <div className="h-full flex flex-col items-center justify-center py-32 gap-3">
+                    <span className="w-6 h-6 border-2 border-zinc-800 border-t-blue-500 rounded-full animate-spin" />
+                    <p className="text-xs text-zinc-500 font-medium">
+                      Syncing live stream...
+                    </p>
+                  </div>
+                ) : visible.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center text-center py-24 px-6 border border-dashed border-zinc-800 rounded-2xl bg-zinc-950/20">
+                    <p className="text-sm text-zinc-500 font-medium">
+                      {filter === "all"
+                        ? "No additional records active. Populate your schedule."
+                        : "No records match active parameters."}
                   </p>
-                </div>
-              ) : visible.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-center py-40 px-6 border border-dashed border-zinc-800 rounded-2xl bg-zinc-950/20">
-                  <p className="text-sm text-zinc-500 font-medium">
-                    {filter === "all"
-                      ? "No records active. Populate your schedule."
-                      : "No records match active parameters."}
-                  </p>
-                </div>
-              ) : (
-                <ul className="space-y-4">
-                  {visible.map((todo) => {
+                  </div>
+                ) : (
+                  visible.map((todo) => {
                     const isEditing = editingId === todo.id;
 
                     return (
@@ -480,9 +542,9 @@ export function TodoBoard() {
                         )}
                       </li>
                     );
-                  })}
-                </ul>
-              )}
+                  })
+                )}
+              </ul>
             </div>
           </section>
         </div>
