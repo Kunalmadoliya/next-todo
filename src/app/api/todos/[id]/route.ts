@@ -1,71 +1,6 @@
 import {NextRequest, NextResponse} from "next/server";
 import {prisma} from "@/lib/db";
 
-export async function GET() {
-  try {
-    const todos = await prisma.todo.findMany();
-
-    return NextResponse.json(
-      {
-        success: true,
-        data: todos,
-      },
-      {status: 200},
-    );
-  } catch (error) {
-    return NextResponse.json(
-      {
-        success: false,
-        message:
-          error instanceof Error ? error.message : "Internal Server Error",
-      },
-      {status: 500},
-    );
-  }
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    const {title, description, completed} = await request.json();
-
-    if (!title || !description) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Title and description are required",
-        },
-        {status: 400},
-      );
-    }
-
-    const todo = await prisma.todo.create({
-      data: {
-        title,
-        description,
-        completed,
-      },
-    });
-
-    return NextResponse.json(
-      {
-        success: true,
-        message: "Todo created successfully",
-        data: todo,
-      },
-      {status: 201},
-    );
-  } catch (error) {
-    return NextResponse.json(
-      {
-        success: false,
-        message:
-          error instanceof Error ? error.message : "Internal Server Error",
-      },
-      {status: 500},
-    );
-  }
-}
-
 export async function PATCH(
   request: NextRequest,
   {params}: {params: Promise<{id: string}>},
@@ -85,13 +20,11 @@ export async function PATCH(
     }
 
     const updatedTodo = await prisma.todo.update({
-      where: {
-        id,
-      },
+      where: {id},
       data: {
-        title,
-        description,
-        completed,
+        ...(title !== undefined && {title}),
+        ...(description !== undefined && {description}),
+        ...(completed !== undefined && {completed}),
       },
     });
 
@@ -126,7 +59,7 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   {params}: {params: Promise<{id: string}>},
 ) {
   try {
@@ -143,9 +76,7 @@ export async function DELETE(
     }
 
     await prisma.todo.delete({
-      where: {
-        id,
-      },
+      where: {id},
     });
 
     return NextResponse.json(
