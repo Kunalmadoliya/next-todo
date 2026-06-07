@@ -55,7 +55,7 @@ export default function SignupPage() {
         })
 
         if (signInResult?.ok) {
-          router.push('/dashboard')
+          router.push('/todo')
         } else {
           router.push('/auth/login')
         }
