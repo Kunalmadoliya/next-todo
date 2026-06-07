@@ -1,10 +1,14 @@
-import { TodoBoard } from '@/components/todo-board'
-import React from 'react'
+import { TodoBoard } from "@/components/todo-board";
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
-const page = () => {
-  return (
-    <TodoBoard/>
-  )
-}
+const page = async () => {
+  const session = await auth();
 
-export default page
+  if (!session?.user.id) {
+    redirect("/auth/login");
+  }
+  return <TodoBoard />;
+};
+
+export default page;

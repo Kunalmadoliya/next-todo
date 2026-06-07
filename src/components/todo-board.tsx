@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useState, useRef } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+} from "react";
 import {
   createTodo,
   deleteTodo,
@@ -8,6 +14,9 @@ import {
   updateTodo,
   type Todo,
 } from "../lib/todos";
+
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 function formatDate(iso: string) {
   return new Intl.DateTimeFormat("en-US", {
@@ -19,6 +28,14 @@ function formatDate(iso: string) {
 }
 
 export function TodoBoard() {
+  const router = useRouter();
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/auth/login");
+    }
+  }, [status, router]);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,16 +62,16 @@ export function TodoBoard() {
 
   const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const triggerToast = useCallback((
-    message: string,
-    type: "success" | "error" = "success",
-  ) => {
-    if (toastTimeoutRef.current) {
-      clearTimeout(toastTimeoutRef.current);
-    }
-    setToast({ message, type });
-    toastTimeoutRef.current = setTimeout(() => setToast(null), 3000);
-  }, []);
+  const triggerToast = useCallback(
+    (message: string, type: "success" | "error" = "success") => {
+      if (toastTimeoutRef.current) {
+        clearTimeout(toastTimeoutRef.current);
+      }
+      setToast({ message, type });
+      toastTimeoutRef.current = setTimeout(() => setToast(null), 3000);
+    },
+    [],
+  );
 
   useEffect(() => {
     return () => {
@@ -209,7 +226,6 @@ export function TodoBoard() {
       <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* ================= LEFT SIDE: MANAGEMENT & FILTERS (5 Columns) ================= */}
         <div className="lg:col-span-5 flex flex-col gap-6 lg:sticky lg:top-12">
-          
           {/* Filter Tab List Container */}
           <section className="bg-zinc-900/40 border border-zinc-800/60 rounded-2xl p-4 backdrop-blur-md shadow-sm">
             <div
@@ -339,7 +355,7 @@ export function TodoBoard() {
                 {/* ================= UNALTERABLE SYSTEM CARD: SOCIAL NETWORK ARCHWAY ================= */}
                 <li className="p-5 rounded-2xl border border-blue-500/30 bg-gradient-to-br from-zinc-900 via-zinc-900 to-blue-950/20 shadow-md relative overflow-hidden group transition-all duration-300 hover:border-blue-500/50">
                   <div className="absolute top-0 right-0 transform translate-x-4 -translate-y-4 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl pointer-events-none" />
-                  
+
                   <div className="flex items-start gap-4">
                     {/* Visual Portal Dot Anchor */}
                     <div className="mt-1 relative flex items-center justify-center">
@@ -357,13 +373,13 @@ export function TodoBoard() {
                               Verified Dev
                             </span>
                           </h3>
-                          
                         </div>
-                      
                       </div>
-                      
+
                       <p className="text-xs mt-3 leading-relaxed text-zinc-400">
-                        Connect across professional networks. Access live production deployments, architectural write-ups, and structural source repositories.
+                        Connect across professional networks. Access live
+                        production deployments, architectural write-ups, and
+                        structural source repositories.
                       </p>
 
                       {/* Social Grid Connect Layout */}
@@ -375,10 +391,14 @@ export function TodoBoard() {
                           className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-950/80 border border-zinc-800 hover:border-zinc-700/80 text-zinc-300 hover:text-white text-xs font-semibold tracking-wide transition-all duration-200 hover:bg-zinc-900/80 group/link"
                         >
                           <span className="flex items-center gap-2">
-                            <span className="text-zinc-500 group-hover/link:text-blue-400 transition-colors font-mono">𝕏</span>
+                            <span className="text-zinc-500 group-hover/link:text-blue-400 transition-colors font-mono">
+                              𝕏
+                            </span>
                             Twitter / X
                           </span>
-                          <span className="text-[10px] text-zinc-600 group-hover/link:text-zinc-400 transition-colors">↗</span>
+                          <span className="text-[10px] text-zinc-600 group-hover/link:text-zinc-400 transition-colors">
+                            ↗
+                          </span>
                         </a>
                         <a
                           href="https://linkedin.com"
@@ -387,10 +407,14 @@ export function TodoBoard() {
                           className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-950/80 border border-zinc-800 hover:border-zinc-700/80 text-zinc-300 hover:text-white text-xs font-semibold tracking-wide transition-all duration-200 hover:bg-zinc-900/80 group/link"
                         >
                           <span className="flex items-center gap-2">
-                            <span className="text-zinc-500 group-hover/link:text-blue-400 transition-colors font-mono">in</span>
+                            <span className="text-zinc-500 group-hover/link:text-blue-400 transition-colors font-mono">
+                              in
+                            </span>
                             LinkedIn
                           </span>
-                          <span className="text-[10px] text-zinc-600 group-hover/link:text-zinc-400 transition-colors">↗</span>
+                          <span className="text-[10px] text-zinc-600 group-hover/link:text-zinc-400 transition-colors">
+                            ↗
+                          </span>
                         </a>
                       </div>
                     </div>
@@ -411,7 +435,7 @@ export function TodoBoard() {
                       {filter === "all"
                         ? "No additional records active. Populate your schedule."
                         : "No records match active parameters."}
-                  </p>
+                    </p>
                   </div>
                 ) : (
                   visible.map((todo) => {
